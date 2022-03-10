@@ -64,6 +64,7 @@ public final class Main {
 
     // Setup Spark Routes
 
+
     // TODO: create a call to Spark.post to make a POST request to a URL which
     // will handle getting matchmaking results for the input
     // It should only take in the route and a new ResultsHandler
@@ -81,10 +82,10 @@ public final class Main {
 
       return "OK";
     });
-    Spark.post("/matches", new ResultsHandler());
 
     // Allows requests from any domain (i.e., any URL). This makes development
     // easier, but it’s not a good idea for deployment.
+    Spark.post("/matches", new ResultsHandler());
     Spark.before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
   }
 
@@ -113,19 +114,19 @@ public final class Main {
   private static class ResultsHandler implements Route {
     @Override
     public String handle(Request req, Response res) throws JSONException {
-      // TODO: Get JSONObject from req and use it to get the value of the sun, moon, and rising for generating matches
-      JSONObject json;
-      String sun = null, moon = null, rising = null;
-      try {
-        json = new JSONObject(req.body());
-        sun = json.getString("sun");
-        moon = json.getString("moon");
-        rising = json.getString("rising");
+      String sun = null;
+      String moon = null;
+      String rising = null;
+
+      try{
+        JSONObject h = new JSONObject(req.body());
+        sun = h.getString("sun");//?
+        moon = h.getString("moon"); //?
+        rising = h.getString("rising"); //??? i know this wrong
       } catch (JSONException e) {
         e.printStackTrace();
       }
 
-      // TODO: use the MatchMaker.makeMatches method to get matches
       List<String> matches = MatchMaker.makeMatches(sun, moon, rising);
 
       // TODO: create an immutable map using the matches

@@ -10,21 +10,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 // TODO: select the list element where the suggestions should go, and all three dropdown elements
 //  HINT: look at the HTML
-// id of list is suggestions
-const listElem = document.getElementById("suggestions");
-const sun = document.getElementById("sun");
-const moon = document.getElementById("moon");
-const rising = document.getElementById("rising");
+const suggestions = document.querySelector('#suggestions');
 // Here, when the value of sun is changed, we will call the method postAndUpdate.
 // TODO: Do the same for moon and rising
-sun.addEventListener("change", postAndUpdate);
-moon.addEventListener("change", postAndUpdate);
-rising.addEventListener("change", postAndUpdate);
+const sun = document.querySelector('#sun');
+sun.addEventListener('change', postAndUpdate);
+const moon = document.querySelector('#moon');
+moon.addEventListener('change', postAndUpdate);
+const rising = document.querySelector('#rising');
+rising.addEventListener('change', postAndUpdate);
 function postAndUpdate() {
     // TODO: empty the suggestionList (you want new suggestions each time someone types something new)
     //  HINT: use .innerHTML
-    const sugList = document.getElementById("suggestions");
-    sugList.innerHTML = "";
+    suggestions.innerHTML = '';
     // TODO: add a type annotation to make this of type MatchesRequestData
     const postParameters = {
         // TODO: get the text inside the input box
@@ -38,31 +36,30 @@ function postAndUpdate() {
     //  HINT: check out the POST REQUESTS section of the lab and of the front-end guide.
     //  Make sure you add "Access-Control-Allow-Origin":"*" to your headers.
     //  Remember to add a type annotation for the response data using the Matches type you defined above!
-    const res = fetch("http://localhost:4567/matches", {
-        method: "POST",
+    fetch('http://localhost:4567/matches', {
+        method: 'POST',
         headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
+            'Access-Control-Allow-Origin': '*'
         },
         body: JSON.stringify(postParameters)
-    });
+    })
+        .then(response => response.json())
+        .then((data) => {
+            console.log(data);
+            updateSuggestions(data.matches);
+        });
     // TODO: Call and fill in the updateSuggestions method in one of the .then statements in the Promise
     //  Parse the JSON in the response object
     //  HINT: remember to get the specific field in the JSON you want to use
-    res.then(response => response.json()).then((data) => updateSuggestions(data.matches));
 }
 function updateSuggestions(matches) {
     // TODO: for each element in the set of matches, append it to the suggestionList
     //  HINT: use innerHTML += to append to the suggestions list
     //  NOTE: you should use <li> (list item) tags to wrap each element. When you do so,
     //  make sure to add the attribute 'tabindex="0"' (for example: <li tabindex="0">{your element}</li>).
-    //  This makes each element selectable via screen reader.
-    console.log(matches);
+    //  This makes each element selectable via screen reader
     for (let i = 0; i < matches.length; i++) {
-        const li = document.createElement("li");
-        listElem.appendChild(li);
-        li.innerHTML += matches[i];
-        li.setAttribute("tabindex", "0");
+        suggestions.innerHTML += `<li tabindex="0">${matches[i]}</li>`;
     }
 }
 // TODO: create an event listener to the document (document.addEventListener) that detects "keyup".
@@ -70,14 +67,11 @@ function updateSuggestions(matches) {
 //  values for the sun, moon, and rising using updateValues. Then call postAndUpdate().
 //  HINT: the listener callback function should be asynchronous and wait until the values are
 //  updated before calling postAndUpdate().
-document.addEventListener("keyup", (e) => __awaiter(void 0, void 0, void 0, function* () {
-    if (e.key === "R") {
-        sun.value = "Aries";
-        moon.value = "Aries";
-        rising.value = "Cancer";
+document.addEventListener("keyup", (event) => __awaiter(void 0, void 0, void 0, function* () {
+    if (event.key == 'm') {
+        yield updateValues("Cancer", "Scorpio", "Gemini");
+        postAndUpdate();
     }
-    yield updateValues(sun.value, moon.value, rising.value);
-    postAndUpdate();
 }));
 function updateValues(sunval, moonval, risingval) {
     return __awaiter(this, void 0, void 0, function* () {
